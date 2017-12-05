@@ -4,6 +4,9 @@
 \usepackage{booktabs}
 \usepackage{listings}
 \usepackage{makecell}
+\usepackage{graphicx}
+
+\graphicspath{ {images/} }
 
 \begin{document}
 
@@ -173,9 +176,14 @@ We used the implmenetation of fast gradient sign method and saliency map method 
 
 \subsection{Fast Gradient Sign Method}
 
+For fast gradient sign method, we used 5000 examples from the test set of each dataset (except for CGTSRB10 which has only 3360 test examples) and generated adversarial examples with \(\epsilon=0.1~0.6\).
+
+\includegraphics[scale=0.45]{fgsm}
+
 
 \subsection{Saliency Map Method}
 
+\includegraphics[scale=0.45]{jsma}
 
 \section{Adversarial Training}
 
