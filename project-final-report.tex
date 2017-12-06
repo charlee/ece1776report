@@ -176,9 +176,19 @@ We used the implmenetation of fast gradient sign method and saliency map method 
 
 \subsection{Fast Gradient Sign Method}
 
-For fast gradient sign method, we used 5000 examples from the test set of each dataset (except for CGTSRB10 which has only 3360 test examples) and generated adversarial examples with \(\epsilon=0.1~0.6\).
+For fast gradient sign method, we used 5000 examples from the test set of each dataset (except for CGTSRB10 which has only 3360 test examples)
+and generated adversarial examples with \(\epsilon=0.1~0.6\).
+For each example, first a random label different than the example's original label is selected as attack target.
+Then the FGSM algorithm is executed to generate an adversarial example.
+Finally, the generated adversarial example is fed into the original CNN model to get a prediction,
+and the prediction is compared with its original label and the attack target.
+If the prediction is identical with attack target then it is a successful targeted attack,
+otherwise if the prediction is not the same as the original label, its a successful misclassification.
+
 
 \includegraphics[scale=0.45]{fgsm}
+
+
 
 
 \subsection{Saliency Map Method}
@@ -204,7 +214,7 @@ For fast gradient sign method, we used 5000 examples from the test set of each d
 
 \bibitem{papernot2015}
     Nicolas Papernot et.\ al.,
-    \emph{The Limitations of Deep Learning in Adversarial Settings},
+   \emph{The Limitations of Deep Learning in Adversarial Settings},
     arXiv 1511.07528v1,
     11/2015
 
