@@ -1,10 +1,12 @@
 %project-proposal.tex
 \documentclass{article}
-\usepackage[letterpaper, margin=1.5in]{geometry}
+\usepackage[letterpaper, margin=1.2in]{geometry}
 \usepackage{booktabs}
 \usepackage{listings}
 \usepackage{makecell}
 \usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{subcaption}
 
 \graphicspath{ {images/} }
 
@@ -12,7 +14,7 @@
 
 
 \title{An Experiment of Adversarial Exmaples Crafting and Adversarial Training on Various Datasets}
-\author{Jian Li \\ charlee.li@mail.utoroton.ca \and Mingyue Yang \\ myshirley.yang@mail.utoroton.ca}
+\author{Jian Li \and Mingyue Yang \and David Lie}
 \maketitle
 
 \begin{abstract}
@@ -49,135 +51,37 @@ MNISTBG(MNIST with background)\cite{mnistbg} is a patched version of MNIST datas
 
 As a comparasion, we did the same experiment on the original MNIST dataset.
 
-\section{CNN Model}
-
-We trained a convolutional neural network model for each dataset.
-The architecture and test accuracy of each CNN is described in Table~\ref{tab:cnnarch}.
-
-These CNNs are implemented with TensorFlow\cite{tensorflow}.
-
-\subsection{Experience}
-
-Initially we implemented the CNN model with the \lstinline{Estimator} class to simplify the training and testing process.
-However later we found that \lstinline{Estimator} heavily capsulated the model and could not provide enough support for adversarial examples crafting.
-Since both fast gradient sign method and saliency map method are whitebox attacks, they require the model to be able to produce
-predictions for any given input tensor. Eventually we crafted the model with the following form:
-
-\begin{lstlisting}
-class CNNModel:
-    def make_model(self, x):
-        # construct layers based on input x
-        ...
-        return output_tensor
-\end{lstlisting}
-
-\begin{table}
-\centering
-\begin{tabular}{llllll}
-    \toprule
-    Layer & CGTSRB10 & CIFAR10 & FMNIST & MNISTBG & MNIST \\
-    \midrule
-    0, input &
-        32$\times$32$\times$3 &
-        32$\times$32$\times$3 &
-        28$\times$28$\times$1 &
-        28$\times$28$\times$1 &
-        28$\times$28$\times$1 \\
-    \midrule
-
-    1, cnv & 
-        \makecell{knl=5$\times$5 \\ cnv=32$\times$32} & 
-        \makecell{knl=3$\times$3 \\ cnv=48$\times$48} &
-        \makecell{knl=5$\times$5 \\ cnv=32$\times$32} &
-        \makecell{knl=5$\times$5 \\ cnv=32$\times$32} &
-        \makecell{knl=5$\times$5 \\ cnv=32$\times$32} \\
-    \midrule
-    2, pooling &
-        2$\times$2 &
-        2$\times$2 &
-        2$\times$2 &
-        2$\times$2 &
-        2$\times$2 \\
-    \midrule
-
-    3, cnv & 
-       \makecell{knl=5$\times$5 \\ cnv=64$\times$64} & 
-       \makecell{knl=3$\times$3 \\ cnv=96$\times$96} &
-       \makecell{knl=5$\times$5 \\ cnv=64$\times$64} &
-       \makecell{knl=5$\times$5 \\ cnv=64$\times$64} &
-       \makecell{knl=5$\times$5 \\ cnv=64$\times$64} \\
-    \midrule
-
-    4, pooling &
-        2$\times$2 &
-        2$\times$2 &
-        2$\times$2 &
-        2$\times$2 &
-        2$\times$2 \\
-    \midrule
-
-    5, cnv & 
-       \makecell{knl=5$\times$5 \\ cnv=128$\times$128} & 
-       \makecell{knl=3$\times$3 \\ cnv=192$\times$192} &
-       - &
-       - &
-       - \\
-    \midrule
-
-    6, pooling &
-        2$\times$2 &
-        2$\times$2 &
-        - &
-        - &
-        - \\
-    \midrule
-    
-    7, dense &
-        512 &
-        512 &
-        1024 &
-        1024 &
-        1024 \\
-    \midrule
-
-    8, dense &
-        - &
-        256 &
-        - &
-        - &
-        - \\
-    \midrule
-
-    9, dense &
-        10 &
-        10 &
-        10 &
-        10 &
-        10 \\
-
-    \midrule
-
-    test accuracy &
-        97\% &
-        68\% &
-        92\% &
-        92\% &
-        99\% \\
-
-    \bottomrule
-\end{tabular}
-\caption{\label{tab:cnnarch} CNN models architecture}
-\end{table}
-
 
 \section{Adversarial Examples Crafting}
 
 We used the implmenetation of fast gradient sign method and saliency map method from the CleverHans\cite{cleverhans}.
 
+\subsection{CNN Models}
+
+We trained a convolutional neural network model with TensorFlow\cite{tensorflow} for each dataset.
+The legitimate test accuracy is shown in Table~\ref{tab:cnnaccuracy}.
+
+\begin{table}
+\centering
+\begin{tabular}{lr}
+    \toprule
+    Dataset & Test accuracy \\
+    \midrule
+    CGTSRB10 & 97\% \\
+    CIFAR10 & 68\% \\
+    FMNIST & 92\% \\
+    MNISTBG & 92\% \\
+    MNIST & 99\% \\
+    \bottomrule
+\end{tabular}
+\caption{\label{tab:cnnaccuracy} CNN test accuracy with legitimate examples}
+\end{table}
+
+
 \subsection{Fast Gradient Sign Method}
 
 For fast gradient sign method, we used 5000 examples from the test set of each dataset (except for CGTSRB10 which has only 3360 test examples)
-and generated adversarial examples with \(\epsilon=0.1~0.6\).
+and generated adversarial examples with \(\epsilon=0.1 \sim 0.6\).
 For each example, first a random label different than the example's original label is selected as attack target.
 Then the FGSM algorithm is executed to generate an adversarial example.
 Finally, the generated adversarial example is fed into the original CNN model to get a prediction,
@@ -185,24 +89,203 @@ and the prediction is compared with its original label and the attack target.
 If the prediction is identical with attack target then it is a successful targeted attack,
 otherwise if the prediction is not the same as the original label, its a successful misclassification.
 
-
-\includegraphics[scale=0.45]{fgsm}
-
-
-
+Figure \ref{fig:fgsm} shows the result of success rate for both misclassification and targeted attacks.
 
 \subsection{Saliency Map Method}
 
-\includegraphics[scale=0.45]{jsma}
+For saliency map method, we used the same 5000 examples to generate adversarial examples.
+Our plan was to evaluate the performance of different \(\gamma\) parameters.
+However, since \(\gamma\) controls the number of iterations, it is not necessary to repeat the execution
+on every variation of \(\gamma\). 
+Therefore we crafted the adversarial examples with \(\gamma=0.15\) while 
+recording the iteration count when misclassification and targeted attack succeed with a slightly modified JSMA algorithm.
 
-\section{Adversarial Training}
+After the adversarial examples are generated, we calculated the success rate for each planned \(\gamma\) value
+with the data recorded during the crafting. Figure \ref{fig:jsma} shows the result of success rate.
+
+\begin{figure}[t!]
+    \centering
+    \begin{subfigure}[b]{0.49\linewidth}
+        \includegraphics[width=\linewidth]{fgsm}
+        \caption{FGSM}
+        \label{fig:fgsm}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\linewidth}
+        \includegraphics[width=\linewidth]{jsma}
+        \caption{JSMA}
+        \label{fig:jsma}
+    \end{subfigure}
+    \caption{Success rate of JSMA and FGSM on various datasets.}
+\end{figure}
 
 
-\section{Discussion}
+\subsection{Observe}
+
+FGSM can easily confuse CNN model to misclassify an image by altering all the pixels by \(\epsilon\).
+For all the datasets, \(\epsilon=0.2\) can easily achieve 80\% success rate on a na\"ive CNN model.
+Practically \(\epsilon=0.3\) is easily detectable by human eyes.
+
+However the targeted attacks did not show a good success rate. In most case, targeted success rate starts to fall when \(\epsilon\geq 0.3\).
+Intuitively when \(\epsilon\geq 0.3\) the perturbation is enough to confuse human to make wrong classification,
+which results in low success rate for targeted attack. However the reason still requires further investigation.
+
+The CNN model for CIFAR10 dataset is easily attacked (misclassification rate $\approx$ 100\% when \(\epsilon=0.1\)),
+which is considered the result of its low accuracy (68\%) on legitimate examples.
+
+JSMA gave a good success rate on both misclassification and targeted attacks. 
+For most datasets, \(\gamma=0.14\) is enough to guarantee 95\% success rate against a na\"ive model.
+
+\section{Adversarial Training with FGSM}
+
+Adversarial training is introduced by Goodfellow et\ al.\cite{goodfellow2015}. The fundimental idea is to use adversarial examples as a regularizer:
+
+\[ \tilde{J}(\theta, x, y) = \alpha J(\theta, x, y) + (1 - \alpha)J(\theta, x + \epsilon sign(\nabla_xJ(\theta, x, y))) \]
+
+In all of our experiments we used $\alpha=0.5$. First, we train the CNN model with legitimate traning data to get a na\"ive mode.
+Then we craft adversarial examples with test data and evaluate the misclassification and targeted success rate.
+Next, we do adversarial training three times and regenerate adversarial examples and re-evaluate the success rate after each training session.
+We repeated this process with $\alpha=0.1\sim 0.6$ on all the datasets.
+
+Due to space limit, we only picked some of the results (Figure~\ref{fig:trainsucc}), which however could demostrate some interesting facts.
+
+\subsection{Observe}
+
+Initially we expected the adversarial training could produce a more robust model that could defense the FGSM attacks. However we found two interesting facts.
+Denote the parameter used in adversarial training by $\epsilon$ and the parameter used in following adversarial example crafting by $\tilde{\epsilon}$.
+
+First, a lower $\epsilon$ ($\epsilon = 0.1$) does not provide too much defense against higher $\tilde{\epsilon}$. Especially in the FMNIST dataset, 
+even after several adversarial trainings, $\tilde{\epsilon}=0.6$ can still achieve approximately 80\% misclassification rate.
+
+Second, a higher $\epsilon$ does not provide any defense on lower $\tilde{\epsilon}$. When $\epsilon=0.3$, although adversarial examples crafted with $\tilde{\epsilon}=0.3$
+can only make less than 10\% success rate, adversarial examples crafted with $\tilde{\epsilon}=0.1$ has higher success rate than $\tilde{\epsilon}=0.3$ and will not decrease
+significantly. The similar effect can be seen in $\epsilon=0.5$.
+
+This indicates that adversarial training with various $\tilde{\epsilon}$ may be required in order to train a robust model, however the feasibility is still an open question.
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{{eps0.1/sucrate-cgtsrb10-0.1}.png}
+        \caption{CGTSRB $\epsilon=0.1$}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{{eps0.3/sucrate-cgtsrb10-0.3}.png}
+        \caption{CGTSRB $\epsilon=0.3$}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{{eps0.5/sucrate-cgtsrb10-0.5}.png}
+        \caption{CGTSRB $\epsilon=0.5$}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{{eps0.1/sucrate-fmnist-0.1}.png}
+        \caption{FMNIST $\epsilon=0.1$}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{{eps0.3/sucrate-fmnist-0.3}.png}
+        \caption{FMNIST $\epsilon=0.3$}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{{eps0.5/sucrate-fmnist-0.5}.png}
+        \caption{FMNIST $\epsilon=0.5$}
+    \end{subfigure}
+    \caption{Success Rate of FGMS with adversarial training. Bars $0.1 \sim 0.6$ are $\tilde{\epsilon}$ used in adversarial example crafting.}
+    \label{fig:trainsucc}
+\end{figure}
+
+
+\section{Effect of Number of Epochs on FGSM Whitebox Attack}
+
+FGSM attacks are first performed on models that are cleanly trained with slightly fewer epochs (slightly underfitting).
+For comparison, the FGSM attacks are again performed on models that are cleanly trained with slightly more epochs (overfitting).
+The accuracy of the 4 models start to show a general trend as epsilon increases.
+When the epsilon becomes large, models for all the 4 datasets show low accuracy for the FGSM adversarial attack.
+It can be observed that all overfitting models are more resistant to attacks with small epsilon values than their underfitting counterparts.
+For attacks with large epsilon values, however, overfitting models may or may not perform slightly worse on FGSM adversarial samples.
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{{image2/fgsm_adv_attack}.png}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{{image2/fgsm_adv_attack}.png}
+    \end{subfigure}
+    \caption{Effect of number of epoches on FGSM whitebox attack}
+\end{figure}
+
+
+\section{Effect of Dataset on FGSM Whitebox Attack and Blackbox Attack}
+
+Also, comparing to models trained with datasets containing noisy backgrounds (GTSRB10 and SVHN),
+models cleanly trained on dataset with clear background (MNIST and FMNIST) are sustainable to adversarial attacks with a small epsilon value. For both the overfitting and underfitting models,
+MNIST and FMNIST datasets have better accuracy over adversarial samples with small epsilon values.
+
+Then, the FGSM black-box attacks are performed on models trained with all the 4 datasets.
+Although we used substitute models with higher accuracy for the MNIST and FMNIST datasets,
+their accuracy on the adversarial samples are still generally higher than the SVHN and GTSRB10 model.
+For MNIST and FMNIST models, the FGSM blackbox attacks are hardly successful with a small epsilon value.
+As the epsilon value increases, the accuracy of all the 4 models decrease in a smooth curvy trend.
+The accuracy over adversarial samples converge to around 10\% as the epsilon value approaches its maximum.
+This again demonstrates that models trained with clean-background dataset are more robust under the FGSM attacks with small epsilon values.
+This may be due to the fact that the datasets with clean backgrounds are easier to train and the FGSM component introduced is seen as anomaly for their clean background.
+
+
+\section{Cross-model FGSM Attacks for FGSM Adversarial Training}
+
+Cross-model attack is also performed for models with adversarial training.
+For each dataset, the result of cross-model attack is averaged over 5 separate CNN models with similar structure,
+trained with same adversarial samples with an epsilon value of $0.5$, but different initialization parameters.
+The details of the 5 models used for each dataset is shown in <Table ?>.
+The FGSM attack first use samples constructed from a CNN model with the same architecture as the attacked models but different initialization parameter.
+Then the adversarial samples are constructed from a DNN model, that has different architecture as the attacked models. The results are shown in <Figure ?> and <Figure ?>.
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{{image2/fgsm_adv_attack}.png}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{{image2/fgsm_adv_attack}.png}
+    \end{subfigure}
+    \caption{Effect of number of epoches on FGSM whitebox attack}
+\end{figure}
+
+<Figure ?> shows how GTSRB with different number of classes perform for cross-model attacks.
+It can be observe that, the GTSRB10 dataset using only 10 classes from the GTSRB dataset, although obtained a lower adversarial training accuracy, has much higher accuracy than the GTSRB43 dataset which includes all 43 classes.
+This result is intuitive: with more classes, it is easier to reach a close class boundary that causes the model to misclassify.
+
+From <Figure ?> and <Figure ?>, it can be seen that the different architecture and the epsilon value used to construct the adversarial samples do not have much effect on model’s accuracy.
+Although there are trends for specific dataset types, no general pattern can be observed. Further exploration may be required to figure out the pattern.
+
+
+\section{Dataset Distribution}
+To investigate why dataset type can influence accuracy of model over adversarial attacks, the distribution of all datasets is studied.
+The T-SNE algorithm is performed on all datasets to obtain a 2D view for the high-dimensional data points.
+T-SNE graphs for original clean data are obtained for both the MNIST dataset and the GTSRB10 are shown in <Figure ?>.
+From the graphs, it can be observed that the MNIST dataset have more easily distinguishable clusters with clear boundaries, while the clusters for the GTSRB10 dataset are more scattered.
+(We tried tuning the perplexity of the T-SNE algorithm for GTSRB10, but it can never obtain a clearer boundary than MNIST).
+This is due to the fact that the MNIST dataset have a simple clear background, while the GTSRB10 dataset has a noisy background.
+This result also holds for other datasets that have clear/noisy background.
+The complexity and lack of clear boundary may contribute to the fact that of datasets with noisy backgrounds are more susceptible to attacks with small epsilon values.
+
+To show how the adversarial samples and original clean samples are different, the T-SNE algorithm is again performed on both original samples and FGSM adversarial samples of the MNIST dataset.
+For data labelled by their original class, it can be seen that data points in same original class form easily distinguishable clusters.
+For data labelled using epsilon values from $0 \sim 0.9$, it can be seen that adversarial data points all scatter over the 2D space, while original clean data form many small clusters in the 2D space.
+The boundary between the adversarial and clean data points is not clear. This shows that although the FGSM adversarial samples are able to fool the attacked models,
+from the T-SNE perspective, FGSM adversarial samples can still be distinguished by their original class, and the common patterns in adversarial samples are not obvious.
+
+For further investigation, an MNIST class is randomly picked, and T-SNE is performed on both FGSM adversarial samples and original clean samples in this specific class.
+In this specific class, original clean data from a distinguishable cluster, while the adversarial samples scatter over the space and there is no boundary between samples with different epsilon values.
+This indicates that it is possible to separate adversarial samples and original clean data given the original class.
 
 
 \section{Conclusion}
 
+We experimented adversarial example crafting on various datasets and demostrated the success rate of fast gradient sign method and saliency map method on each dataset.
+We also experimented FGSM adversarial training and found that various $\epsilon$ values may be required to obtain a robust model with adversarial training.
+
+TODO
 
 \begin{thebibliography}{9}
 \raggedright
