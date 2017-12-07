@@ -1,0 +1,4 @@
+*.log
+*.aux
+*.tar.gz
+.vscode/

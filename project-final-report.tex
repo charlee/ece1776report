@@ -40,27 +40,33 @@ Then we retrained the model with adversarial training, and regenerated adversari
 We crafted adversarial examples using different settings on the datasets shown in Table~\ref{tab:datasetused} below.
 
 \begin{table}[htb]
-\begin{center}
+    \centering
+    \begin{tabular}{ | C{0.15\textwidth} | C{0.83\textwidth} | }
     \toprule
-    \begin{tabular}{ | C{0.15\textwidth} | C{0.83\textwidth} | }
-    Dataset & Descriptions \\ \midrule
-    \end{tabular}
-    \begin{tabular}{ | C{0.15\textwidth} | C{0.83\textwidth} | }
+    Dataset & Descriptions \\
+    \midrule
     GTSRB43 & An image collection consisting of 43 traffic signs captured from real life. Every traffic sign has a serial of images with different resolutions. (32$\times$32 color images) \\ \midrule
     CGTSRB10 & A subset of the original GTSRB\cite{gtsrb} dataset with 10 selected types of traffic signs. (28$\times$28 grey-scale images) \\ \midrule
     CIFAR10 & A collection of real-life objects\cite{cifar10}, containing 60000 samples in 10 classes. (32$\times$32 color images) \\ \midrule
     MNIST & Original MNIST\cite{mnist} dataset with 10 handwritten digits. (28x28 grey-scaled images) \\ \midrule
     FMNIST & Fashion MNIST\cite{fmnist} is a MNIST-like dataset that consists of 10 types of fashion objects such as skirts and shirts. It consists of a training set of 60000 examples and a test set of 10000 examples. (28$\times$28 grey-scale images) \\ \midrule
     MNISTBG & MNIST with background)\cite{mnistbg} is a patched version of MNIST dataset. Each MNIST example is attached with a background image extracted randomly from a set of 20 images downloaded from the Internet. (28$\times$28 grey-scale images) \\ \midrule
-    SVHN & Cropped street sign numbers with real-life backgrounds\cite{svhn}. (32x32 color images) \\
-    \end{tabular}
+    N & Cropped street sign numbers with real-life backgrounds\cite{svhn}. (32x32 color images) \\
     \bottomrule
-\end{center}
-\caption{\label{tab:datasetused} List of Datasets Used}
+    \end{tabular}
+    \caption{\label{tab:datasetused} List of Datasets Used}
 \end{table}
 
+\section{Adversarial Examples Crafting}
 
-\section{CNN Models}
+We used implementation of the fast gradient sign method and saliency map method from the CleverHans\cite{cleverhans} to craft
+adversarial examples for datasets CGTSRB10, CIFAR10, FMNIST, and MNISTBG.
+For comparison, we also did the same experiment on original MNIST dataset.
+
+
+\subsection{Adversarial Examples Crafting with FGSM and JSMA}
+
+\subsubsection{CNN Models}
 
 We trained a convolutional neural network model with TensorFlow\cite{tensorflow} for each dataset.
 The legitimate test accuracy is shown in Table \ref{tab:cnnaccuracy}.
@@ -71,26 +77,19 @@ The legitimate test accuracy is shown in Table \ref{tab:cnnaccuracy}.
     \toprule
     Dataset & Test accuracy \\
     \midrule
-    CGTSRB10 & 97\% \S, 98\% \P \\
-    CIFAR10 & 68\% \S \\
-    FMNIST & 92\% \S, 99\% \P \\
-    MNISTBG & 92\% \S \\
-    MNIST & 99\% \S, 98\% \P \\
-    SVHN & 97\% \P \\
+    CGTSRB10 & 97\% \\
+    CIFAR10 & 68\%  \\
+    FMNIST & 92\% \\
+    MNISTBG & 92\% \\
+    MNIST & 99\% \\
+    SVHN & 97\% \\
     \bottomrule
 \end{tabular}
-\begin{tablenotes}
-    \item \S: Accuracy of models in Section 4.1, 4.2, 4.3, 5.1; \P: Accuracy of models in Section 4.4, 4.5, 5.2
-\end{tablenotes}
 \caption{\label{tab:cnnaccuracy} CNN test accuracy with legitimate examples}
 \end{table}
 
 
-\section{Adversarial Examples Crafting}
-
-We used implementation of the fast gradient sign method and saliency map method from the CleverHans\cite{cleverhans}.
-
-\subsection{Fast Gradient Sign Method}
+\subsubsection{Fast Gradient Sign Method}
 
 For fast gradient sign method, we used 5000 examples from the test set of each dataset (except for CGTSRB10 which has only 3360 test examples)
 and generated adversarial examples with \(\epsilon=0.1 \sim 0.6\).
@@ -103,7 +102,7 @@ otherwise if the prediction is not the same as the original label, its a success
 
 Figure \ref{fig:fgsm} shows the result of success rate for both misclassification and targeted attacks.
 
-\subsection{Saliency Map Method}
+\subsubsection{Saliency Map Method}
 
 For saliency map method, we used the same 5000 examples to generate adversarial examples.
 Our plan was to evaluate the performance of different \(\gamma\) parameters.
@@ -131,7 +130,7 @@ with the data recorded during the crafting. Figure \ref{fig:jsma} shows the resu
 \end{figure}
 
 
-\subsection{Observation}
+\subsubsection{Observation}
 
 FGSM can easily confuse CNN model to misclassify an image by altering all the pixels by \(\epsilon\).
 For all the datasets, \(\epsilon=0.2\) can easily achieve 80\% success rate on a na\"ive CNN model.
@@ -149,6 +148,23 @@ For most datasets, \(\gamma=0.14\) is enough to guarantee 95\% success rate agai
 
 
 \subsection{Effect of Number of Epochs on FGSM Whitebox Attack}
+
+To evaluate the effect of number of epoches on FGSM whitebox attack, we did the following experiment based on CNN models listed in Table \ref{tab:cnnaccuracy2}.
+
+\begin{table}
+\centering
+\begin{tabular}{cc}
+    \toprule
+    Dataset & Test accuracy \\
+    \midrule
+    CGTSRB10 & 98\% \\
+    FMNIST & 99\% \\
+    MNIST & 98\%  \\
+    SVHN & 97\% \\
+    \bottomrule
+\end{tabular}
+\caption{\label{tab:cnnaccuracy2} CNN test accuracy with legitimate examples}
+\end{table}
 
 FGSM attacks are first performed on models that are cleanly trained with slightly fewer epochs (slightly underfitting).
 For comparison, the FGSM attacks are again performed on models that are cleanly trained with slightly more epochs (overfitting).
@@ -174,7 +190,8 @@ For attacks with large $\epsilon$ values, however, overfitting models may or may
 
 \subsection{Effect of Dataset on FGSM Whitebox Attack and Blackbox Attack}
 
-Also, comparing to models trained with datasets containing noisy backgrounds (GTSRB10 and SVHN), models cleanly trained on dataset with clear background (MNIST and FMNIST) are sustainable to adversarial attacks with a small $\epsilon$ value.
+We also evaluated the effect of datasets based on the CNN models in Table \ref{tab:cnnaccuracy2}.
+Comparing to models trained with datasets containing noisy backgrounds (GTSRB10 and SVHN), models cleanly trained on dataset with clear background (MNIST and FMNIST) are sustainable to adversarial attacks with a small $\epsilon$ value.
 For both the overfitting and underfitting models, MNIST and FMNIST datasets have better accuracy over adversarial samples with small $\epsilon$ values.
 
 \begin{figure}[h!]
@@ -201,7 +218,8 @@ Adversarial training is introduced by Goodfellow et\ al.\cite{goodfellow2015}. T
 
 \subsection{Effect of Adversarial Training}
 
-In all of our experiments we used $\alpha=0.5$. First, we train the CNN model with legitimate traning data to get a na\"ive mode.
+In the following experiments we used $\alpha=0.5$. First, we train the CNN model with legitimate traning data to get a na\"ive mode.
+The test accuracy of these models are listed in Table \ref{tab:cnnaccuracy}.
 Then we craft adversarial examples with test data and evaluate the misclassification and targeted success rate.
 Next, we do adversarial training three times and regenerate adversarial examples and re-evaluate the success rate after each training session.
 We repeated this process with $\alpha=0.1\sim 0.6$ on all the datasets.
