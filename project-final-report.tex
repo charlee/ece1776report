@@ -48,7 +48,7 @@ We crafted adversarial examples using different settings on the datasets shown i
     GTSRB43 & An image collection consisting of 43 traffic signs captured from real life. Every traffic sign has a serial of images with different resolutions. (32$\times$32 color images) \\ \midrule
     CGTSRB10 & A subset of the original GTSRB\cite{gtsrb} dataset with 10 selected types of traffic signs. (28$\times$28 grey-scale images) \\ \midrule
     CIFAR10 & A collection of real-life objects\cite{cifar10}, containing 60000 samples in 10 classes. (32$\times$32 color images) \\ \midrule
-    MNIST & Original MNIST\cite{mnist} dataset with 10 handwritten digits. (28x28 grey-scaled images) \\ \midrule
+    MNIST & Original MNIST\cite{mnist} dataset with 10 handwritten digits. (28x28 grey-scale images) \\ \midrule
     FMNIST & Fashion MNIST\cite{fmnist} is a MNIST-like dataset that consists of 10 types of fashion objects such as skirts and shirts. It consists of a training set of 60000 examples and a test set of 10000 examples. (28$\times$28 grey-scale images) \\ \midrule
     MNISTBG & MNIST with background)\cite{mnistbg} is a patched version of MNIST dataset. Each MNIST example is attached with a background image extracted randomly from a set of 20 images downloaded from the Internet. (28$\times$28 grey-scale images) \\ \midrule
     SVHN & Cropped street sign numbers with real-life backgrounds\cite{svhn}. (32x32 color images) \\
@@ -82,7 +82,6 @@ The legitimate test accuracy is shown in Table \ref{tab:cnnaccuracy}.
     FMNIST & 92\% \\
     MNISTBG & 92\% \\
     MNIST & 99\% \\
-    SVHN & 97\% \\
     \bottomrule
 \end{tabular}
 \caption{\label{tab:cnnaccuracy} CNN test accuracy with legitimate examples}
@@ -147,9 +146,9 @@ JSMA gave a good success rate on both misclassification and targeted attacks.
 For most datasets, \(\gamma=0.14\) is enough to guarantee 95\% success rate against a na\"ive model.
 
 
-\subsection{Effect of Number of Epochs on FGSM Whitebox Attack}
+\subsection{Effect of Number of Clean Training Epochs on FGSM Whitebox Attack}
 
-To evaluate the effect of number of epoches on FGSM whitebox attack, we did the following experiment based on CNN models listed in Table \ref{tab:cnnaccuracy2}.
+To evaluate the effect of number of epoches on FGSM whitebox attack, experiments are conducted based on CNN models listed in Table \ref{tab:cnnaccuracy2}.
 
 \begin{table}
 \centering
@@ -166,33 +165,54 @@ To evaluate the effect of number of epoches on FGSM whitebox attack, we did the 
 \caption{\label{tab:cnnaccuracy2} CNN test accuracy with legitimate examples}
 \end{table}
 
-FGSM attacks are first performed on models that are cleanly trained with slightly fewer epochs (slightly underfitting).
-For comparison, the FGSM attacks are again performed on models that are cleanly trained with slightly more epochs (overfitting).
-The accuracy of the 4 models start to show a general trend as $\epsilon$ increases.
-When the $\epsilon$ becomes large, models for all the 4 datasets show low accuracy for the FGSM adversarial attack.
-It can be observed that all overfitting models are more resistant to attacks with small $\epsilon$ values than their underfitting counterparts.
-For attacks with large $\epsilon$ values, however, overfitting models may or may not perform slightly worse on FGSM adversarial samples.
+FGSM attacks are first performed on models that are cleanly trained with slightly fewer epochs.
+For comparison, the FGSM attacks are again performed on models that are cleanly trained with slightly more epochs.
+The accuracy of the 4 models show a general trend.
+When the $\epsilon$ becomes larger, models for all the 4 datasets show lower accuracy for the FGSM adversarial attack.
+It can also be observed that models trained with slightly more epochs are more resistant to attacks with small $\epsilon$ values than their underfitting counterparts.
 
 \begin{figure}[h!]
     \centering
     \begin{subfigure}[b]{0.49\textwidth}
         \includegraphics[width=\textwidth]{{image2/2a}.png}
-        \caption{Slightly Fewer Epochs}
-        \label{fig:fewerfgsm}
+        \caption{\label{fig:fewerfgsm} Slightly Fewer Epochs}
     \end{subfigure}
     \begin{subfigure}[b]{0.49\textwidth}
         \includegraphics[width=\textwidth]{{image2/2b}.png}
-        \caption{Slightly More Epochs}
-        \label{fig:morefgsm}
+        \caption{\label{fig:morefgsm} Slightly More Epochs}
     \end{subfigure}
-    \caption{Effect of number of epoches on FGSM whitebox attack}
+    \caption{Effect of Number of Epoches on FGSM whitebox attack}
+\end{figure}
+
+In Figure \ref{fig:morefgsm}, $\epsilon$ has little effect on the GTSRB10 model. 
+For further inspection, adversarial attacks with smaller $\epsilon$ values are performed on cleanly trained GTSRB10 models with different number of training epochs.
+From Figure \ref{fig:gtsrbnumepochadv}, it can be seen that the accuracies of the GTSRB10 models fall abruptly with small initial changes in $\epsilon$ (0.01 to 0.09). 
+The accuracy of the GTSRB10 models start to converge when $\epsilon$ reaches 0.3.
+
+For comparison, similar experiments are also conducted on the MNIST dataset, as shown in Figure \ref{fig:mnistnumepochadv}.
+In both of the figures, there is a general trend that models trained with more number of epochs are more resistant to FGSM adversarial attacks.
+Under this general trend, there are also some suboptimal values for number of epochs: while the accuracy generally becomes better as the number of epochs increases, the accuracy lines may fluctuate in a certain range when the number of epochs increases.
+
+It is also interesting that by merely training models on clean data for large number of epochs, models can gain ability to defend against adversarial attacks with large $\epsilon$ values.
+Comparing to models trained with other datasets, this effect is especially obvious for GTSRB10.
+Further studies on model complexity and dataset complexity may be conducted to investigate why these GTSRB10 models require fewer epochs to defend attacks with large $\epsilon$.
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{{image2/gtsrb_num_epoch}.png}
+        \caption{\label{fig:gtsrbnumepochadv} GTSRB10}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{{image2/mnist_num_epoch}.png}
+        \caption{\label{fig:mnistnumepochadv} MNIST}
+    \end{subfigure}
+    \caption{Effect of number of epoches on Accuracy over Adversarial Examples}
 \end{figure}
 
 \subsection{Effect of Dataset on FGSM Whitebox Attack and Blackbox Attack}
-
-We also evaluated the effect of datasets based on the CNN models in Table \ref{tab:cnnaccuracy2}.
-Comparing to models trained with datasets containing noisy backgrounds (GTSRB10 and SVHN), models cleanly trained on dataset with clear background (MNIST and FMNIST) are sustainable to adversarial attacks with a small $\epsilon$ value.
-For both the overfitting and underfitting models, MNIST and FMNIST datasets have better accuracy over adversarial samples with small $\epsilon$ values.
+From the above figures, it can be seen that comparing to models trained with datasets containing noisy backgrounds (GTSRB10 and SVHN), models trained on dataset with clear background (MNIST and FMNIST) are more sustainable to adversarial attacks with small $\epsilon$ values.
+For models trained with both slightly more and slightly fewer epochs, MNIST and FMNIST datasets have better accuracy over adversarial samples with small $\epsilon$.
 
 \begin{figure}[h!]
     \centering
@@ -201,12 +221,12 @@ For both the overfitting and underfitting models, MNIST and FMNIST datasets have
     \caption{FGSM Blackbox Attack on Different Datasets}
 \end{figure}
 
-Then, the FGSM black-box attacks are performed on models trained with all the 4 datasets.
+Then, the FGSM black-box attacks are performed on models trained with all the 4 datasets (accuracy of models are shown in Table \ref{tab:cnnaccuracy2} ).
 Although we used substitute models with higher accuracy for the MNIST and FMNIST datasets, their accuracy on the adversarial samples are still generally higher than the SVHN and GTSRB10 model.
-For MNIST and FMNIST models, the FGSM black-box attacks are hardly successful with a small $\epsilon$ value.
-As the $\epsilon$ value increases, the accuracy of all the 4 models decrease in a smooth curvy trend.
+For MNIST and FMNIST models, the FGSM black-box attacks are hardly successful with small $\epsilon$.
+As $\epsilon$ increases, the accuracy of all the 4 models decrease in a smooth curvy trend.
 The accuracy over adversarial samples converge to around 10\% as the $\epsilon$ value approaches its maximum.
-This again demonstrates that models trained with clean-background dataset are more robust under the FGSM attacks with small $\epsilon$ values.
+This again demonstrates that models trained with simple dataset that have clean backgrounds are more robust against the FGSM attacks with small $\epsilon$ values.
 
 
 \section{Adversarial Training with FGSM}
@@ -218,7 +238,7 @@ Adversarial training is introduced by Goodfellow et\ al.\cite{goodfellow2015}. T
 
 \subsection{Effect of Adversarial Training}
 
-In the following experiments we used $\alpha=0.5$. First, we train the CNN model with legitimate traning data to get a na\"ive mode.
+In the following experiments we used $\alpha=0.5$. First, we train CNN models with legitimate training data to get a na\"ive mode.
 The test accuracy of these models are listed in Table \ref{tab:cnnaccuracy}.
 Then we craft adversarial examples with test data and evaluate the misclassification and targeted success rate.
 Next, we do adversarial training three times and regenerate adversarial examples and re-evaluate the success rate after each training session.
@@ -229,7 +249,7 @@ Initially we expected the adversarial training could produce a more robust model
 Denote the parameter used in adversarial training by $\epsilon$ and the parameter used in following adversarial example crafting by $\tilde{\epsilon}$.
 
 First, a lower $\epsilon$ ($\epsilon = 0.1$) does not provide too much defense against higher $\tilde{\epsilon}$. Especially in the FMNIST dataset, 
-even after several adversarial trainings, $\tilde{\epsilon}=0.6$ can still achieve approximately 80\% misclassification rate.
+even after several iterations of adversarial training, $\tilde{\epsilon}=0.6$ can still achieve approximately 80\% misclassification rate.
 
 Second, a higher $\epsilon$ does not provide any defense on lower $\tilde{\epsilon}$. When $\epsilon=0.3$, although adversarial examples crafted with $\tilde{\epsilon}=0.3$
 can only make less than 10\% success rate, adversarial examples crafted with $\tilde{\epsilon}=0.1$ has higher success rate than $\tilde{\epsilon}=0.3$ and will not decrease
@@ -269,13 +289,13 @@ This indicates that adversarial training with various $\tilde{\epsilon}$ may be 
 \end{figure}
 
 
-\subsection{Cross-model FGSM Attacks for FGSM Adversarial Training}
+\subsection{Cross-model FGSM Attacks for Adversarial Training}
 
-Cross-model attack is also performed for models with adversarial training.
-For each dataset, the result of cross-model attack is averaged over 5 separate CNN models with $\epsilon$=0.5.
+Cross-model attacks are also performed for models with adversarial training.
+For each dataset, the results of cross-model attack are averaged over 5 separate CNN models with $\epsilon$=0.5.
 The details of the 5 models used for each dataset is shown in Table \ref{tab:acc5adv} in Appendix.
-The FGSM attack first use samples constructed from a CNN model with the same architecture as but different initialization parameter.
-Then the adversarial samples are constructed from a DNN model, that has different architecture from the attacked models.
+The FGSM attack first use samples constructed from a CNN model with the same architecture as the attacked models but different initialization parameters.
+Then the adversarial samples are constructed from a DNN model, which has different architecture from the attacked models.
 The results are shown in Figure \ref{fig:mnistcross} and Figure \ref{fig:gtsrbcross}.
 
 \begin{figure}[h!]
@@ -294,12 +314,14 @@ The results are shown in Figure \ref{fig:mnistcross} and Figure \ref{fig:gtsrbcr
 \end{figure}
 
 Figure \ref{fig:gtsrbcross} shows how GTSRB with different number of classes perform for cross-model attacks.
-It can be observe that, the GTSRB10 dataset using only 10 classes from the GTSRB dataset, although obtained a lower adversarial training accuracy, has much higher accuracy than the GTSRB43 dataset which includes all 43 classes.
+The GTSRB10 dataset has much higher accuracy than the GTSRB43 dataset which includes all 43 classes.
 This result is intuitive: with more classes, it is easier to reach a close class boundary that causes the model to misclassify.
 
 From Figure \ref{fig:mnistcross} and Figure \ref{fig:gtsrbcross}, it can be seen that the different architecture and $\epsilon$ used to construct the adversarial samples do not have much effect on model’s accuracy.
-Although there are trends for specific dataset types, no general pattern can be observed. Further exploration may be required to figure out the pattern.
-In addition,simple adversarial training, although gives some protection, is still vulnerable to cross-model attacks.
+Although there are trends for specific dataset types, no general pattern can be observed across datasets.
+Further exploration may be required to figure out patterns.
+
+This shows that simple adversarial training, although gives some protection, is still vulnerable to cross-model attacks.
 
 
 \section{Dataset Distribution}
@@ -318,9 +340,9 @@ In addition,simple adversarial training, although gives some protection, is stil
     \label{fig:tsneclean}
 \end{figure}
 
-To investigate why dataset type can influence accuracy of model over adversarial attacks, the distribution of all datasets is studied.
+To investigate why dataset type can influence accuracy of model over adversarial attacks, distribution of datasets is studied.
 The T-SNE algorithm is performed on all datasets to obtain a 2D view for the high-dimensional data points.
-T-SNE graphs for original clean data are obtained for both the MNIST dataset and the GTSRB10 are shown in Figure \ref{fig:tsneclean}.
+T-SNE graphs for both original clean data in the MNIST and the GTSRB10 datasets are shown in Figure \ref{fig:tsneclean}.
 From the graphs, it can be observed that the MNIST dataset have more easily distinguishable clusters with clear boundaries, while the clusters for the GTSRB10 dataset are more scattered.
 This is due to the fact that the MNIST dataset are simpler images with clear background, while the GTSRB10 dataset has a noisy background.
 This result also holds for other datasets that have clear/noisy background.
@@ -349,8 +371,10 @@ The complexity and lack of clear boundary may contribute to the fact that of dat
 To show how the adversarial samples and original clean samples are different, the T-SNE algorithm is again performed on both original samples and FGSM adversarial samples of the MNIST dataset.
 For data labelled by their original class, data points in same original class form distinguishable clusters.
 For data labelled using $\epsilon$ values from 0~0.9, adversarial data points all scatter over the 2D space, while original clean data form many small clusters in the 2D space.
-The boundary between the adversarial and clean data points is not clear.
-This shows that although the FGSM adversarial samples are able to fool the attacked models, from the T-SNE perspective, FGSM adversarial samples can still be distinguished by their original class, and the common patterns in adversarial samples are not obvious.
+The boundary between the adversarial and clean data points is not as clear.
+
+This shows that although the FGSM adversarial samples are able to fool the attacked models, from the T-SNE perspective, FGSM adversarial samples can still be distinguished by their original class, and the common patterns in adversarial samples are not as obvious as the common patterns in same original classes.
+The fact that adversarial samples with varied epsilon value can still be distinguished by their original class gives an explanation the argument in Section 3.2 that merely doing more training on clean data can give models protection over adversarial attacks.
 
 For further investigation, a specific MNIST class is picked, and T-SNE is performed on both FGSM adversarial samples and original clean samples in this specific class.
 In this specific class, original clean data from a distinguishable cluster, while the adversarial samples scatter over the space and there is no boundary between samples with different $\epsilon$ values.
@@ -360,14 +384,14 @@ This suggests a possibility to build a separately trained machine learning class
 
 \section{Conclusion}
 
-We experimented adversarial example crafting on various datasets and demostrated the success rate of fast gradient sign method and saliency map method on each dataset.
-We also experimented FGSM adversarial training and found that various $\epsilon$ values may be required to obtain a robust model with adversarial training.
+We experimented adversarial example crafting on various datasets and demonstrated the success rate of fast gradient sign method and saliency map method on each dataset.
+We also experimented FGSM adversarial training: we used various $\epsilon$ values to both train and attack adversarially trained models from different datasets.
 
-For cleanly trained models, we found that slightly overfitting models and simple datasets with clean backgrounds are better at sustaining FGSM attacks.
-Investigation shows the class boundaries are more clear for simplers datasets.
-In addition, we observe that adversarial training on simpler datasets have better effects.
-Adversarial training, although gives some defenses, is still susceptible to cross-model attacks.
-Increasing the number of classes in dataset also makes cross-model attacks easier.
+For cleanly trained models, we found that training models with clean data for more epochs gives model more protection over adversarial attacks. Simpler datasets with clean backgrounds are also better at sustaining both whitebox and blackbox attacks, both for cleanly trained models and models with adversasrial training. This may relate to the fact that the class boundaries are more clear for simplers datasets.
+
+For adversarial training, adversarial training with a specific $\epsilon$ value only does not provide much protection for attacks constructed using other $\epsilon$. It may be required training samples with varied $\epsilon$ values to obtain a robust defense model. In addition, adversarial training using data with fixed $\epsilon$, although provides some defense, is still susceptible to cross-model attacks.
+
+Dataset inspection shows that the difference between adversarial samples and original data samples, though exist, is much less than the difference between data from different original classes. This suggests that adversarial samples, although are able to confuse specific machine learning models, can still to be correctly detected in some ways.
 
 
 \begin{thebibliography}{9}
@@ -443,6 +467,7 @@ Increasing the number of classes in dataset also makes cross-model attacks easie
     MNIST 3 & 0.982 & 0.980 \\
     MNIST 4 & 0.989 & 0.983 \\
     MNIST 5 & 0.982 & 0.977 \\
+
     GTSRB10 1 & 0.999 & 0.998 \\
     GTSRB10 2 & 0.998 & 0.995 \\
     GTSRB10 3 & 0.999 & 0.997 \\
@@ -456,7 +481,7 @@ Increasing the number of classes in dataset also makes cross-model attacks easie
     GTSRB43 5 & 0.978 & 0.944 \\
     \bottomrule
 \end{tabular}
-\caption{\label{tab:acc5adv} Accuracy of Model After Adversarial Training \(\epsilon=0.5\) }
+\caption{\label{tab:acc5adv} Accuracy of Model After Adversarial Training \(\epsilon=0.5\) Used in Figure \ref{fig:mnistcross} and Figure \ref{fig:gtsrbcross} }
 \end{table}
 
 
