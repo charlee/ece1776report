@@ -60,11 +60,7 @@ We crafted adversarial examples using different settings on the datasets shown i
 \end{table}
 
 
-\section{Adversarial Examples Crafting}
-
-We used implementation of the fast gradient sign method and saliency map method from the CleverHans\cite{cleverhans}.
-
-\subsection{CNN Models}
+\section{CNN Models}
 
 We trained a convolutional neural network model with TensorFlow\cite{tensorflow} for each dataset.
 The legitimate test accuracy is shown in Table \ref{tab:cnnaccuracy}.
@@ -89,6 +85,10 @@ The legitimate test accuracy is shown in Table \ref{tab:cnnaccuracy}.
 \caption{\label{tab:cnnaccuracy} CNN test accuracy with legitimate examples}
 \end{table}
 
+
+\section{Adversarial Examples Crafting}
+
+We used implementation of the fast gradient sign method and saliency map method from the CleverHans\cite{cleverhans}.
 
 \subsection{Fast Gradient Sign Method}
 
@@ -255,7 +255,7 @@ This indicates that adversarial training with various $\tilde{\epsilon}$ may be 
 
 Cross-model attack is also performed for models with adversarial training.
 For each dataset, the result of cross-model attack is averaged over 5 separate CNN models with $\epsilon$=0.5.
-The details of the 5 models used for each dataset is shown in Table 3 in Appendix.
+The details of the 5 models used for each dataset is shown in Table \ref{tab:acc5adv} in Appendix.
 The FGSM attack first use samples constructed from a CNN model with the same architecture as but different initialization parameter.
 Then the adversarial samples are constructed from a DNN model, that has different architecture from the attacked models.
 The results are shown in Figure \ref{fig:mnistcross} and Figure \ref{fig:gtsrbcross}.
@@ -288,11 +288,11 @@ In addition,simple adversarial training, although gives some protection, is stil
 
 \begin{figure}[h!]
     \centering
-    \begin{subfigure}[b]{0.49\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
         \includegraphics[width=\textwidth]{{image2/6a_mnist}.png}
         \caption{MNIST}
     \end{subfigure}
-    \begin{subfigure}[b]{0.49\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
         \includegraphics[width=\textwidth]{{image2/6b_gtsrb}.png}
         \caption{GTSRB10}
     \end{subfigure}
@@ -310,19 +310,19 @@ The complexity and lack of clear boundary may contribute to the fact that of dat
 
 \begin{figure}[h!]
     \centering
-    \begin{subfigure}[b]{0.49\textwidth}
+    \begin{subfigure}[b]{0.3\textwidth}
         \includegraphics[width=\textwidth]{{image2/7a_mnist_by_class}.png}
         \caption{Clean \& Adversarial Samples Classifed by Original Class}
         \label{fig:tsne7a}
     \end{subfigure}
-    \begin{subfigure}[b]{0.49\textwidth}
+    \begin{subfigure}[b]{0.3\textwidth}
         \includegraphics[width=\textwidth]{{image2/7b_mnist_by_epsilon}.png}
         \caption{Clean \& Adversarial Samples from All Classes, Classified by $\epsilon$}
         \label{fig:tsne7b}
     \end{subfigure}
-    \begin{subfigure}[b]{0.49\textwidth}
+    \begin{subfigure}[b]{0.3\textwidth}
         \includegraphics[width=\textwidth]{{image2/7c_mnist_specific_class}.png}
-        \caption{Clean \& Adversarial Samples from Specific Class, Classified by $\epsilon$}
+        \caption{Clean \& Adversarial Samples from Single Class, Classified by $\epsilon$}
         \label{fig:tsne7c}
     \end{subfigure}
     \caption{T-SNE Graphs of Adversarial and Clean Samples from MNIST}
@@ -356,7 +356,7 @@ Increasing the number of classes in dataset also makes cross-model attacks easie
 \raggedright
 \bibitem{goodfellow2015}
     Goodfellow, Ian J et\ al.,
-    \emph{Explaining and Harnessing Adversarial Examples},	
+    \emph{Explaining and Harnessing Adversarial Examples},  
     arXiv:1412.6572v3,
     3/2015
 
@@ -405,6 +405,43 @@ Increasing the number of classes in dataset also makes cross-model attacks easie
     http://tensorflow.org/
 
 \end{thebibliography}
+
+
+
+\section{Appendix}
+\begin{table} [htbp]
+\centering
+\begin{tabular}{ccc}
+    \toprule
+    Model After Adversarial Training \(\epsilon=0.5\) & Accuracy on Legitimate Examples & Accuracy on Adversarial Examples \\
+    \midrule
+    FMNIST 1 & 0.991 & 0.991 \\
+    FMNIST 2 & 0.992 & 0.992 \\
+    FMNIST 3 & 0.991 & 0.990 \\
+    FMNIST 4 & 0.991 & 0.990 \\
+    FMNIST 5 & 0.992 & 0.992 \\
+    MNIST 1 & 0.985 & 0.981 \\
+    MNIST 2 & 0.982 & 0.978 \\
+    MNIST 3 & 0.982 & 0.980 \\
+    MNIST 4 & 0.989 & 0.983 \\
+    MNIST 5 & 0.982 & 0.977 \\
+    GTSRB10 1 & 0.999 & 0.998 \\
+    GTSRB10 2 & 0.998 & 0.995 \\
+    GTSRB10 3 & 0.999 & 0.997 \\
+    GTSRB10 4 & 0.999 & 0.998 \\
+    GTSRB10 5 & 0.999 & 0.998 \\
+
+    GTSRB43 1 & 0.980 & 0.942 \\
+    GTSRB43 2 & 0.976 & 0.960 \\
+    GTSRB43 3 & 0.974 & 0.939 \\
+    GTSRB43 4 & 0.979 & 0.968 \\
+    GTSRB43 5 & 0.978 & 0.944 \\
+    \bottomrule
+\end{tabular}
+\caption{\label{tab:acc5adv} Accuracy of Model After Adversarial Training \(\epsilon=0.5\) }
+\end{table}
+
+
 
 
 \end{document}

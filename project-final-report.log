@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  6 DEC 2017 18:43
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  6 DEC 2017 19:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -357,18 +357,12 @@ Overfull \hbox (16.38113pt too wide) in paragraph at lines 45--58
  [] 
  []
 
-
-Overfull \hbox (22.5701pt too wide) in paragraph at lines 65--66
-\OT1/cmr/m/n/10 We used im-ple-men-ta-tion of the fast gra-di-ent sign method a
-nd saliency map method from the CleverHans[[]]. 
- []
-
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 78.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 74.
 (/usr/local/texlive/2017/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 78.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 74.
 
 
 ! LaTeX Error: Environment tablenotes undefined.
@@ -377,7 +371,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.86 \begin{tablenotes}
+l.82 \begin{tablenotes}
                        
 ? 
 
@@ -387,20 +381,26 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.87     \item \S
+l.83     \item \S
                  : Accuracy of models in Section 4.1, 4.2, 4.3, 5.1; \P: Acc...
 
 ? 
 
-! LaTeX Error: \begin{table} on input line 72 ended by \end{tablenotes}.
+! LaTeX Error: \begin{table} on input line 68 ended by \end{tablenotes}.
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.88 \end{tablenotes}
+l.84 \end{tablenotes}
                      
 ? 
+
+Overfull \hbox (22.5701pt too wide) in paragraph at lines 91--92
+\OT1/cmr/m/n/10 We used im-ple-men-ta-tion of the fast gra-di-ent sign method a
+nd saliency map method from the CleverHans[[]]. 
+ []
+
 [1
 
 {/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
@@ -523,13 +523,13 @@ File: image2/6a_mnist.png Graphic file (type png)
 
 <use image2/6a_mnist.png>
 Package pdftex.def Info: image2/6a_mnist.png used on input line 292.
-(pdftex.def)             Requested size: 216.01767pt x 162.01425pt.
+(pdftex.def)             Requested size: 176.33629pt x 132.2506pt.
  <image2/6b_gtsrb.png, id=53, 462.528pt x 346.896pt>
 File: image2/6b_gtsrb.png Graphic file (type png)
 
 <use image2/6b_gtsrb.png>
 Package pdftex.def Info: image2/6b_gtsrb.png used on input line 296.
-(pdftex.def)             Requested size: 216.01767pt x 162.01425pt.
+(pdftex.def)             Requested size: 176.33629pt x 132.2506pt.
  [6 <./image2/5a.png> <./image2/5b.png> <./image2/6a_mnist.png> <./image2/6b_gt
 srb.png>]
 <image2/7a_mnist_by_class.png, id=61, 462.528pt x 346.896pt>
@@ -537,7 +537,7 @@ File: image2/7a_mnist_by_class.png Graphic file (type png)
 
 <use image2/7a_mnist_by_class.png>
 Package pdftex.def Info: image2/7a_mnist_by_class.png used on input line 314.
-(pdftex.def)             Requested size: 216.01767pt x 162.01425pt.
+(pdftex.def)             Requested size: 132.25557pt x 99.18927pt.
 
 <image2/7b_mnist_by_epsilon.png, id=62, 462.528pt x 346.896pt>
 File: image2/7b_mnist_by_epsilon.png Graphic file (type png)
@@ -545,7 +545,7 @@ File: image2/7b_mnist_by_epsilon.png Graphic file (type png)
 <use image2/7b_mnist_by_epsilon.png>
 Package pdftex.def Info: image2/7b_mnist_by_epsilon.png used on input line 319.
 
-(pdftex.def)             Requested size: 216.01767pt x 162.01425pt.
+(pdftex.def)             Requested size: 132.25557pt x 99.18927pt.
 
 <image2/7c_mnist_specific_class.png, id=63, 462.528pt x 346.896pt>
 File: image2/7c_mnist_specific_class.png Graphic file (type png)
@@ -553,15 +553,19 @@ File: image2/7c_mnist_specific_class.png Graphic file (type png)
 <use image2/7c_mnist_specific_class.png>
 Package pdftex.def Info: image2/7c_mnist_specific_class.png used on input line 
 324.
-(pdftex.def)             Requested size: 216.01767pt x 162.01425pt.
+(pdftex.def)             Requested size: 132.25557pt x 99.18927pt.
  [7 <./image2/7a_mnist_by_class.png> <./image2/7b_mnist_by_epsilon.png> <./imag
 e2/7c_mnist_specific_class.png>]
+Overfull \hbox (78.6846pt too wide) in paragraph at lines 414--441
+ [][] 
+ []
+
 [8] (./project-final-report.aux) ) 
 Here is how much of TeX's memory you used:
- 5301 strings out of 492995
- 79830 string characters out of 6132704
- 157878 words of memory out of 5000000
- 8768 multiletter control sequences out of 15000+600000
+ 5302 strings out of 492995
+ 79843 string characters out of 6132704
+ 157886 words of memory out of 5000000
+ 8769 multiletter control sequences out of 15000+600000
  10506 words of font info for 38 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  42i,11n,40p,347b,478s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -577,7 +581,7 @@ sfonts/cm/cmr17.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsf
 onts/cm/cmr9.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfont
 s/cm/cmsy10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts
 /cm/cmti10.pfb>
-Output written on project-final-report.pdf (8 pages, 1068736 bytes).
+Output written on project-final-report.pdf (8 pages, 1069643 bytes).
 PDF statistics:
  110 PDF objects out of 1000 (max. 8388607)
  54 compressed objects within 1 object stream
